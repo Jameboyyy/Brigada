@@ -1,5 +1,6 @@
-const {DataTypes} = require("sequelize");
-const { sequelize} = require("../config/db");
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
+import User from "./User.js";
 
 const Store = sequelize.define("Store", {
     id: {
@@ -11,7 +12,19 @@ const Store = sequelize.define("Store", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    location: {
+    address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    city: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    state: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    zipCode: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -22,60 +35,21 @@ const Store = sequelize.define("Store", {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
+        validate: {
+            isEmail: true,
+        },
     },
     supervisorId: {
         type: DataTypes.UUID,
-        allowNull: true, // Stores might not have managers yet
+        allowNull: true,
         references: {
-            model: "Users",
+            model: User,
             key: "id",
         },
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE",
     },
-    // Financial andOperational Metrics
-    totalSales: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0.0,
-    },
-    totalOrders: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    },
-    totalEmployees: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    },
-    laborCost: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0.0,
-    },
-    operationalCost: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0.0,
-    },
-    profitMargin: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0.0,
-    },
-    // Performance and Customer Analytics
-    lastPerformanceReviewDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-    },
-    avgCustomerRating: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0.0,
-        validate: { min: 0, max: 5},
-    },
-    totalReviews: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    },
-    // Employee and Shift Analytics
-    totalHoursWorked: {
-        type: DataTypes.FLOAT,
-        defaultValue: 0.0,
-    },
-    // Standard TimeStamps
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
@@ -86,4 +60,7 @@ const Store = sequelize.define("Store", {
     },
 });
 
-modules.exports = Store;
+User.hasMany(Store, { foreignKey: "supervisorId", onDelete: "SET NULL" });
+Store.belongsTo(User, { foreignKey: "supervisorId" });
+
+export default Store;

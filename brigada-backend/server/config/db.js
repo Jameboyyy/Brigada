@@ -1,35 +1,24 @@
-require("dotenv").config();
-const { Sequelize } = require("sequelize");
+import "dotenv/config";
+import { Sequelize } from "sequelize";
 
-const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-        host: process.env.DB_HOST,
-        dialect: "postgres",
-        logging: false,
-    },
-);
+const sequelize = new Sequelize({
+    dialect: "postgres",
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST || "127.0.0.1",
+    port: process.env.DB_PORT || 5432,
+    logging: false,  // Prevents unnecessary logs
+});
 
-const connectDB = async() => {
+const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        console.log("PostgreSQL connect to ", process.env.DB_NAME);
+        console.log("✅ PostgreSQL connected to", process.env.DB_NAME);
     } catch (error) {
-        console.log("Database connection failed", error)
+        console.error("❌ Database connection failed:", error);
         process.exit(1);
     }
 };
 
-const disconnectDB = async() => {
-    try {
-        await sequelize.close();
-        console.log("PostgreSQL connection closed");
-    } catch (error) {
-        console.log("Database connection failed", error)
-        process.exit(1);
-    }
-};
-
-module.exports = { sequelize, connectDB,  disconnectDB};
+export { sequelize, connectDB };
