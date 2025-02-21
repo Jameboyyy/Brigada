@@ -8,6 +8,9 @@ export default function AuthScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
